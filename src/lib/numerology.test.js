@@ -138,9 +138,38 @@ describe('calculateRange', () => {
 })
 
 describe('isValidPlateSeries', () => {
-  it('accepts AA99AA and rejects other shapes', () => {
+  it('accepts both a one- and two-letter series suffix (e.g. TN09L and TN09AB)', () => {
     expect(isValidPlateSeries('WU77WU')).toBe(true)
+    expect(isValidPlateSeries('TN09L')).toBe(true)
+    expect(isValidPlateSeries('TN09AB')).toBe(true)
+  })
+
+  it('rejects shapes that are neither', () => {
     expect(isValidPlateSeries('W077WU')).toBe(false)
     expect(isValidPlateSeries('WU777U')).toBe(false)
+    expect(isValidPlateSeries('TN09')).toBe(false) // no series letters at all
+    expect(isValidPlateSeries('TN09ABC')).toBe(false) // three-letter series too long
+  })
+})
+
+describe('one-letter series plates', () => {
+  it('calculates the same way as a two-letter series (TN09L)', () => {
+    // T=4, N=5, 0, 9, L=3 (CGLS group)
+    expect(seriesValue('TN09L')).toBe(21)
+    expect(letterBreakdown('TN09L')).toEqual([
+      { char: 'T', value: 4 },
+      { char: 'N', value: 5 },
+      { char: '0', value: 0 },
+      { char: '9', value: 9 },
+      { char: 'L', value: 3 },
+    ])
+    const result = calculateOne('TN09L', 9975)
+    expect(result.total).toBe(21 + digitSum(9975))
+  })
+
+  it('works end to end through calculateRange', () => {
+    const results = calculateRange('TN09L', 9975, 9980)
+    expect(results).toHaveLength(6)
+    expect(results.every((r) => r.series === 'TN09L')).toBe(true)
   })
 })

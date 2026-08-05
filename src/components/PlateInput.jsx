@@ -1,7 +1,10 @@
 import { useRef } from 'react'
 
-// AA99AA: letters, letters, digits, digits, letters, letters.
+// AA99AA or AA99A: state letters, district digits, then a one- or
+// two-letter series — RTOs vary on whether that suffix is one letter
+// (e.g. TN09L) or two (e.g. TN09AB), so the 6th cell is optional.
 const KIND = ['letter', 'letter', 'digit', 'digit', 'letter', 'letter']
+const OPTIONAL_INDEX = 5
 
 export function PlateInput({ value, onChange, size = 'md' }) {
   const chars = (value ?? '').padEnd(6, ' ').slice(0, 6).split('')
@@ -54,6 +57,7 @@ export function PlateInput({ value, onChange, size = 'md' }) {
       nodes.push(<span key={`gap-${i}`} aria-hidden="true" className="w-1.5 shrink-0" />)
     }
     const kindLabel = KIND[i] === 'letter' ? 'letter' : 'digit'
+    const isOptional = i === OPTIONAL_INDEX
     nodes.push(
       <input
         key={i}
@@ -63,8 +67,10 @@ export function PlateInput({ value, onChange, size = 'md' }) {
         onKeyDown={(e) => handleKeyDown(i, e)}
         inputMode={KIND[i] === 'digit' ? 'numeric' : 'text'}
         maxLength={1}
-        aria-label={`Plate ${kindLabel}, position ${i + 1} of 6`}
-        className={`${cellSize} shrink-0 rounded border-[1.5px] border-accent bg-surface text-center font-mono font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-1 focus:ring-offset-background`}
+        aria-label={`Plate ${kindLabel}, position ${i + 1} of 6${isOptional ? ' (optional)' : ''}`}
+        className={`${cellSize} shrink-0 rounded bg-surface text-center font-mono font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-1 focus:ring-offset-background ${
+          isOptional ? 'border-[1.5px] border-dashed border-muted' : 'border-[1.5px] border-accent'
+        }`}
       />,
     )
   }

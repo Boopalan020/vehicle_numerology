@@ -193,6 +193,7 @@ export default function App() {
           <div>
             <Eyebrow>{t('plate')}</Eyebrow>
             <PlateInput value={series} onChange={setSeries} />
+            <p className="mt-1.5 font-mono text-[10.5px] text-muted">{t('plateFormatHint')}</p>
           </div>
           <div className="md:min-w-[240px] md:flex-1">
             <Eyebrow>{t('range')}</Eyebrow>

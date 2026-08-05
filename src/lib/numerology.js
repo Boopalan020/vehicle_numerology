@@ -32,7 +32,10 @@ export function digitSum(n) {
     .reduce((sum, d) => sum + Number(d), 0)
 }
 
-const PLATE_PATTERN = /^[A-Za-z]{2}\d{2}[A-Za-z]{2}$/
+// The trailing series letters can be one or two characters depending on the
+// RTO (e.g. TN09L is as valid as TN09AB) — everything else about the plate
+// is fixed: two state-code letters, two district digits.
+const PLATE_PATTERN = /^[A-Za-z]{2}\d{2}[A-Za-z]{1,2}$/
 
 export function isValidPlateSeries(series) {
   return PLATE_PATTERN.test(series)
