@@ -1,0 +1,111 @@
+@import "tailwindcss";
+@import "@heroui/styles";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+  Enn — registration-ledger identity.
+  Overrides HeroUI's semantic tokens (defined in @heroui/styles/themes/default/variables.css)
+  with the ink/stone/brass palette from the design doc. Same variable names, same
+  @theme inline mapping HeroUI already ships — this file only changes the values.
+*/
+:root {
+  color-scheme: light;
+
+  --background: #eaebe3;         /* stone-050 */
+  --foreground: #1b1a17;         /* ink text, light mode */
+
+  --surface: #f5f4ee;
+  --surface-foreground: var(--foreground);
+  --surface-secondary: #e3e2d7;
+  --surface-tertiary: #d8d7ca;
+
+  --overlay: #f5f4ee;
+  --overlay-foreground: var(--foreground);
+
+  --muted: #78766c;
+
+  --default: #dedcd0;
+  --default-foreground: var(--foreground);
+
+  --accent: #7a5714;             /* brass-ink — 5.5:1 on stone-050, AA for body text */
+  --accent-foreground: #f5f4ee;
+
+  --field-background: #f5f4ee;
+  --field-foreground: var(--foreground);
+  --field-placeholder: var(--muted);
+  --field-border: #d3d2c6;
+
+  --border: #d3d2c6;
+  --separator: #d3d2c6;
+  --focus: var(--accent);
+  --link: var(--accent);
+
+  /* Enn's own ordinal luck-band ramp — deliberately separate from --accent,
+     see design doc §3 ("semantic color is separate from the accent hue"). */
+  --band-miga: #1e7f5c;
+  --band-adhishtam: #5b9b6f;
+  --band-sumar: #a6883a;
+  --band-dhuradhishtam: #b9702f;
+  --band-sodhanai: #a94836;
+  --band-abathu: #7a2323;
+  --band-unlisted: #6b6b63;
+}
+
+.dark,
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --background: #15140f;         /* ink-900 */
+  --foreground: #f1eee4;
+
+  --surface: #1e1c16;
+  --surface-foreground: var(--foreground);
+  --surface-secondary: #26241c;
+  --surface-tertiary: #302d23;
+
+  --overlay: #1e1c16;
+  --overlay-foreground: var(--foreground);
+
+  --muted: #b7b3a6;
+
+  --default: #2b291f;
+  --default-foreground: var(--foreground);
+
+  --accent: #d8aa55;             /* brass, dark-safe — 8.6:1 on ink-900 */
+  --accent-foreground: #15140f;
+
+  --field-background: #1e1c16;
+  --field-foreground: var(--foreground);
+  --field-border: #34322a;
+
+  --border: #34322a;
+  --separator: #34322a;
+  --focus: var(--accent);
+  --link: var(--accent);
+}
+
+/* Enn's tokens as first-class Tailwind utilities: bg-band-abathu, text-band-unlisted, font-display, etc. */
+@theme {
+  --color-band-miga: var(--band-miga);
+  --color-band-adhishtam: var(--band-adhishtam);
+  --color-band-sumar: var(--band-sumar);
+  --color-band-dhuradhishtam: var(--band-dhuradhishtam);
+  --color-band-sodhanai: var(--band-sodhanai);
+  --color-band-abathu: var(--band-abathu);
+  --color-band-unlisted: var(--band-unlisted);
+
+  --font-display: "Iowan Old Style", "Sitka Text", Palatino, "Palatino Linotype", Georgia, serif;
+  --font-sans: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Mono", "Segoe UI Mono", Consolas, "Liberation Mono", monospace;
+
+  /* Design doc §2 breakpoints: mobile 320–767 / tablet+laptop 768–1199 / large 1200+.
+     Tailwind's default `md` (768px) already lines up; `lg` is redefined here so it
+     lines up with "large" (1200px) instead of the default 1024px. */
+  --breakpoint-lg: 75rem;
+}
+
+body {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}

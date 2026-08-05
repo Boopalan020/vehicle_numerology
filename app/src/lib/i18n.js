@@ -1,0 +1,113 @@
+// Enn's own strings, English and Tamil. Band names use the source chart's own
+// Tamil wording (see numerology.js) rather than a machine translation of the
+// English gloss. Everything else here is a best-effort UI translation — not
+// professionally reviewed Tamil, but real script and grammar, not placeholder text.
+export const STRINGS = {
+  en: {
+    toggleDark: 'Toggle dark mode',
+    viewHistory: 'View search history',
+    backToTop: 'Back to plate & range',
+    plate: 'Plate',
+    range: 'Range',
+    recent: 'Recent',
+    calculate: 'Calculate',
+    calculating: 'Calculating…',
+    calculatingCount: (n) => `Still calculating — ${n} so far…`,
+    searchPlaceholder: 'Search number…',
+    tiles: 'Tiles',
+    ledger: 'Ledger',
+    scan: 'Scan',
+    scanAxisNote: 'Row = last digit (0–9) · Column = decade · click any cell to open its breakdown',
+    scanScrollNote: 'Ranges wider than 100 numbers scroll horizontally here — one column per ten numbers.',
+    scanMobileFallback: 'Scan needs a wider screen to stay readable — switch to Tiles or Ledger, or view on a tablet or larger.',
+    migaBadge: (n, first) => `${n} highly auspicious (Miga Miga Adhishtam) number${n === 1 ? '' : 's'} in this range — first at ${first}`,
+    enterPrompt: 'Enter a plate and range on the left, then Calculate.',
+    noMatch: 'No results match this filter.',
+    selectPrompt: 'Select a result to see its arithmetic breakdown.',
+    seriesTotal: 'Series total',
+    finalTotal: 'Final total',
+    digitSumOf: (n) => `Digit sum of ${n}`,
+    reducesVia: (path) => `Reduces: ${path.join(' → ')}`,
+    resultDetail: 'Result detail',
+    close: 'Close',
+    compare: 'Compare',
+    pinnedOf: (n) => `${n} of 4 pinned`,
+    pin: (n) => `Pin ${n} to comparison`,
+    unpin: (n) => `Unpin ${n} from comparison`,
+    noHistory: 'No searches yet — run a calculation to build history.',
+    historyLine: (from, to, count) => `${from}–${to} · ${count} results`,
+    justNow: 'just now',
+    minutesAgo: (n) => `${n}m ago`,
+    hoursAgo: (n) => `${n}h ago`,
+    daysAgo: (n) => `${n}d ago`,
+    tableSeries: 'Series',
+    tableNumber: 'Number',
+    tableTotal: 'Total',
+    tableBand: 'Band',
+    tableCaption: 'Numerology results, one row per candidate registration number',
+    errors: {
+      INVALID_SERIES: 'Series must be in format AA99AA (two letters, two digits, two letters).',
+      INVALID_RANGE: 'From and To must be 4-digit numbers (1000–9999).',
+      TO_BEFORE_FROM: 'To must be greater than or equal to From.',
+    },
+  },
+  ta: {
+    toggleDark: 'இருள் பயன்முறை',
+    viewHistory: 'தேடல் வரலாறு',
+    backToTop: 'வாகன எண் மற்றும் வரம்புக்குத் திரும்பு',
+    plate: 'வாகன எண்',
+    range: 'வரம்பு',
+    recent: 'சமீபத்தியவை',
+    calculate: 'கணக்கிடு',
+    calculating: 'கணக்கிடுகிறது…',
+    calculatingCount: (n) => `இன்னும் கணக்கிடுகிறது — இதுவரை ${n}…`,
+    searchPlaceholder: 'எண்ணைத் தேடு…',
+    tiles: 'அட்டைகள்',
+    ledger: 'பட்டியல்',
+    scan: 'வருடல்',
+    scanAxisNote: 'வரிசை = கடைசி இலக்கம் (0–9) · நிரல் = பத்தாண்டு · விவரங்களைக் காண எந்த கட்டத்தையும் அழுத்தவும்',
+    scanScrollNote: '100-க்கும் அதிகமான எண்கள் கொண்ட வரம்புகள் இங்கு கிடைமட்டமாக உருளும் — ஒவ்வொரு பத்திற்கும் ஒரு நிரல்.',
+    scanMobileFallback: 'வருடல் காட்சிக்கு அகன்ற திரை தேவை — அட்டைகள் அல்லது பட்டியலுக்கு மாறவும், அல்லது இதைப் பெரிய திரையில் காணவும்.',
+    migaBadge: (n, first) => `இந்த வரம்பில் ${n} மிக மிக அதிர்ஷ்டமான எண்கள் உள்ளன — முதலாவது ${first}`,
+    enterPrompt: 'இடதுபுறம் வாகன எண்ணையும் வரம்பையும் உள்ளிட்டு, கணக்கிடு-வை அழுத்தவும்.',
+    noMatch: 'இந்த வடிகட்டலுக்குப் பொருந்தும் முடிவுகள் இல்லை.',
+    selectPrompt: 'கணக்கீட்டு விவரங்களைக் காண ஒரு முடிவைத் தேர்ந்தெடுக்கவும்.',
+    seriesTotal: 'வாகன எண் கூட்டுத்தொகை',
+    finalTotal: 'இறுதி எண்',
+    digitSumOf: (n) => `${n}-ன் இலக்க கூட்டுத்தொகை`,
+    reducesVia: (path) => `குறைப்பு: ${path.join(' → ')}`,
+    resultDetail: 'முடிவு விவரம்',
+    close: 'மூடு',
+    compare: 'ஒப்பிடு',
+    pinnedOf: (n) => `4-இல் ${n} பொருத்தப்பட்டவை`,
+    pin: (n) => `${n}-ஐ ஒப்பீட்டில் பொருத்து`,
+    unpin: (n) => `${n}-ஐ ஒப்பீட்டிலிருந்து அகற்று`,
+    noHistory: 'இதுவரை தேடல்கள் இல்லை — கணக்கிட்டு வரலாற்றை உருவாக்கவும்.',
+    historyLine: (from, to, count) => `${from}–${to} · ${count} முடிவுகள்`,
+    justNow: 'இப்போதுதான்',
+    minutesAgo: (n) => `${n} நிமிடங்களுக்கு முன்`,
+    hoursAgo: (n) => `${n} மணி நேரத்திற்கு முன்`,
+    daysAgo: (n) => `${n} நாட்களுக்கு முன்`,
+    tableSeries: 'வாகன எண்',
+    tableNumber: 'எண்',
+    tableTotal: 'மொத்தம்',
+    tableBand: 'விளைவு',
+    tableCaption: 'எண் கணித முடிவுகள், ஒவ்வொரு வரிசையும் ஒரு வேட்பு பதிவு எண்ணுக்கானது',
+    errors: {
+      INVALID_SERIES: 'வாகன எண் AA99AA வடிவத்தில் இருக்க வேண்டும் (இரண்டு எழுத்துகள், இரண்டு இலக்கங்கள், இரண்டு எழுத்துகள்).',
+      INVALID_RANGE: 'From மற்றும் To ஆகியவை 4-இலக்க எண்களாக இருக்க வேண்டும் (1000–9999).',
+      TO_BEFORE_FROM: 'To, From-ஐ விடப் பெரிதாகவோ சமமாகவோ இருக்க வேண்டும்.',
+    },
+  },
+}
+
+export function translate(lang, key, ...args) {
+  const dict = STRINGS[lang] ?? STRINGS.en
+  const entry = dict[key] ?? STRINGS.en[key]
+  return typeof entry === 'function' ? entry(...args) : entry
+}
+
+export function translateError(lang, code) {
+  const dict = STRINGS[lang] ?? STRINGS.en
+  return dict.errors[code] ?? STRINGS.en.errors[code] ?? code
+}
