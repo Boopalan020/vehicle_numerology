@@ -3,6 +3,11 @@ dist/
 dist-ssr/
 *.local
 
+# Legacy pre-rebuild reference files — kept locally, not part of the
+# GitHub repo (the app/ folder is the deployable project).
+/index.html
+/numerology.jpg
+
 # OS cruft
 .DS_Store
 Thumbs.db
