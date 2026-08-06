@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo } from 'react'
+import { createContext, useContext, useEffect, useMemo } from 'react'
 import { useLocalStorage } from './useLocalStorage.js'
 import { translate, translateError } from './i18n.js'
 
@@ -6,6 +6,10 @@ const LangContext = createContext(null)
 
 export function LangProvider({ children }) {
   const [lang, setLang] = useLocalStorage('enn:lang', 'en')
+
+  useEffect(() => {
+    document.documentElement.lang = lang
+  }, [lang])
 
   const value = useMemo(
     () => ({

@@ -18,6 +18,7 @@ import { DetailPanel, DetailSheet } from './components/DetailPanel.jsx'
 import { ComparisonTray } from './components/ComparisonTray.jsx'
 import { HistoryPanel } from './components/HistoryPanel.jsx'
 import { ScrollTopButton } from './components/ScrollTopButton.jsx'
+import { SeoContent } from './components/SeoContent.jsx'
 
 const EMPTY_COUNTS = summarize([])
 const HISTORY_LIMIT = 8
@@ -25,10 +26,13 @@ const HISTORY_LIMIT = 8
 function Wordmark() {
   return (
     <div className="flex items-center gap-2.5">
-      <span className="grid h-7 w-7 place-items-center rounded border-[1.5px] border-accent font-display text-sm text-accent">
+      <span className="grid h-7 w-7 place-items-center rounded border-[1.5px] border-accent font-display text-sm text-accent" aria-hidden="true">
         எ
       </span>
-      <span className="font-display text-lg font-semibold">Enn</span>
+      <h1 className="font-display text-lg font-semibold">
+        Enn
+        <span className="sr-only"> — Vehicle Numerology Calculator (எண் கணிதம்)</span>
+      </h1>
     </div>
   )
 }
@@ -164,9 +168,13 @@ export default function App() {
   )
 
   return (
+    <>
     <div className="flex min-h-screen flex-col bg-background font-sans text-foreground lg:h-screen lg:grid lg:grid-cols-[272px_minmax(0,1fr)_320px] lg:grid-rows-[1fr_auto] lg:overflow-hidden">
       {/* Plate + range controls — full-width bar on mobile/tablet, left rail from 1200px */}
-      <div className="border-b border-border p-5 lg:col-start-1 lg:row-span-2 lg:flex lg:flex-col lg:overflow-y-auto lg:border-b-0 lg:border-r lg:p-6">
+      <aside
+        aria-label={t('plate')}
+        className="border-b border-border p-5 lg:col-start-1 lg:row-span-2 lg:flex lg:flex-col lg:overflow-y-auto lg:border-b-0 lg:border-r lg:p-6"
+      >
         <div className="mb-5 flex items-center justify-between lg:mb-8">
           <Wordmark />
           <div className="flex items-center gap-2">
@@ -217,10 +225,10 @@ export default function App() {
           <Eyebrow>{t('recent')}</Eyebrow>
           <HistoryPanel history={history} onRestore={handleRestore} />
         </div>
-      </div>
+      </aside>
 
       {/* Main: fixed filter header + independently-scrolling results below it */}
-      <div className="flex flex-col lg:col-start-2 lg:row-start-1 lg:overflow-hidden">
+      <main className="flex flex-col lg:col-start-2 lg:row-start-1 lg:overflow-hidden">
         <div className="flex shrink-0 flex-col gap-3 border-b border-border p-5">
           <SummaryStrip counts={counts} activeBand={activeBand} onToggle={setActiveBand} />
           <div className="flex items-center gap-3">
@@ -289,7 +297,7 @@ export default function App() {
             <LedgerTable results={filtered} selected={selected} onSelect={setSelected} />
           )}
         </div>
-      </div>
+      </main>
 
       <div className="lg:col-start-2 lg:row-start-2">
         <ComparisonTray pinned={pinned} onUnpin={togglePin} />
@@ -305,5 +313,7 @@ export default function App() {
       />
       <ScrollTopButton />
     </div>
+    <SeoContent />
+    </>
   )
 }
