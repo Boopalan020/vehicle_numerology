@@ -1,6 +1,6 @@
 // Runs the range calculation off the main thread (design doc §7). Pulls from
 // iterateRange one number at a time and posts results back in chunks, so a
-// large range (up to ~9,000 rows for 1000–9999) neither freezes the tab nor
+// large range (up to 9,999 rows for 0001–9999) neither freezes the tab nor
 // waits for the entire range to finish before the UI can show anything.
 import { iterateRange } from './numerology.js'
 

@@ -1,3 +1,4 @@
+import { formatNumber } from '../lib/numerology.js'
 import { useLang } from '../lib/LangContext.jsx'
 
 function timeAgo(ts, t) {
@@ -23,7 +24,7 @@ export function HistoryPanel({ history, onRestore }) {
               <span className="font-semibold text-foreground">{h.series}</span>
               <span>{timeAgo(h.timestamp, t)}</span>
             </div>
-            <div className="font-mono text-[11px] text-muted">{t('historyLine', h.from, h.to, h.count)}</div>
+            <div className="font-mono text-[11px] text-muted">{t('historyLine', formatNumber(h.from), formatNumber(h.to), h.count)}</div>
           </button>
         </li>
       ))}

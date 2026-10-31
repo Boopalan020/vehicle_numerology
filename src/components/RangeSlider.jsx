@@ -1,11 +1,41 @@
 import { useEffect, useRef, useState } from 'react'
+import { NUMBER_MAX, NUMBER_MIN, formatNumber } from '../lib/numerology.js'
 
-const MIN = 1000
-const MAX = 9999
+const MIN = NUMBER_MIN
+const MAX = NUMBER_MAX
 const STEP = 10
 
 function clamp(v) {
   return Math.min(MAX, Math.max(MIN, v))
+}
+
+// Text field rather than type="number" so it can show the plate form (0007)
+// — a number input drops leading zeros. Edits stay a local draft until blur
+// or Enter, so typing "7" isn't reformatted to "0007" mid-keystroke.
+function NumberField({ value, onCommit, label }) {
+  const [draft, setDraft] = useState(null)
+  return (
+    <input
+      type="text"
+      inputMode="numeric"
+      maxLength={4}
+      value={draft ?? formatNumber(value)}
+      onFocus={(e) => {
+        setDraft(formatNumber(value))
+        e.target.select()
+      }}
+      onChange={(e) => setDraft(e.target.value.replace(/\D/g, ''))}
+      onBlur={() => {
+        if (draft) onCommit(Number(draft))
+        setDraft(null)
+      }}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') e.currentTarget.blur()
+      }}
+      aria-label={label}
+      className="w-[4.5rem] shrink-0 rounded border border-border bg-surface px-2 py-1.5 text-center font-mono text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent"
+    />
+  )
 }
 
 export function RangeSlider({ from, to, onChange }) {
@@ -61,14 +91,7 @@ export function RangeSlider({ from, to, onChange }) {
 
   return (
     <div className="flex items-center gap-3">
-      <input
-        type="number"
-        value={from}
-        onChange={(e) => onChange({ from: Number(e.target.value), to })}
-        onBlur={() => onChange({ from: Math.min(clamp(from), to), to })}
-        aria-label="Range start"
-        className="w-[4.5rem] shrink-0 rounded border border-border bg-surface px-2 py-1.5 text-center font-mono text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent"
-      />
+      <NumberField value={from} onCommit={(v) => onChange({ from: Math.min(clamp(v), to), to })} label="Range start" />
       <div
         ref={trackRef}
         onClick={handleTrackClick}
@@ -109,14 +132,7 @@ export function RangeSlider({ from, to, onChange }) {
           style={{ left: `${pct(to)}%`, borderColor: 'var(--background)' }}
         />
       </div>
-      <input
-        type="number"
-        value={to}
-        onChange={(e) => onChange({ from, to: Number(e.target.value) })}
-        onBlur={() => onChange({ from, to: Math.max(clamp(to), from) })}
-        aria-label="Range end"
-        className="w-[4.5rem] shrink-0 rounded border border-border bg-surface px-2 py-1.5 text-center font-mono text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent"
-      />
+      <NumberField value={to} onCommit={(v) => onChange({ from, to: Math.max(clamp(v), from) })} label="Range end" />
     </div>
   )
 }

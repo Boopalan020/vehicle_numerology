@@ -5,6 +5,17 @@
 // Kept as pure functions with no DOM/React dependency so they're directly
 // unit-testable and reusable in a Web Worker for large ranges (design doc §7).
 
+import { fancyPatterns } from './fancy.js'
+
+// Candidate registration numbers run 0001–9999. They're held as plain
+// integers and only padded for display (see formatNumber).
+export const NUMBER_MIN = 1
+export const NUMBER_MAX = 9999
+
+export function formatNumber(n) {
+  return String(n).padStart(4, '0')
+}
+
 // O(1) letter lookup, built once — replaces the original's per-letter O(8)
 // scan through `tabularValuesMap.entries()` with `.includes()`.
 const LETTER_GROUPS = [
@@ -119,7 +130,7 @@ export function letterBreakdown(series) {
 export function calculateOne(series, number) {
   const total = seriesValue(series) + digitSum(number)
   const { band, path } = reduceToBand(total)
-  return { series, number, total, band, reductionPath: path }
+  return { series, number, total, band, reductionPath: path, fancy: fancyPatterns(number) }
 }
 
 // Fixes finding 2 (no from/to guard) — throws instead of silently no-op'ing.
@@ -129,12 +140,12 @@ export function calculateOne(series, number) {
 // A generator rather than building the array directly: the Web Worker (see
 // numerology.worker.js, design doc §7) pulls from this one value at a time so
 // it can post results back in chunks instead of blocking until the whole
-// range — sometimes up to 9,000 rows — is done.
+// range — sometimes up to 9,999 rows — is done.
 export function* iterateRange(series, from, to) {
   if (!isValidPlateSeries(series)) {
     throw new Error('INVALID_SERIES')
   }
-  if (!Number.isInteger(from) || !Number.isInteger(to) || from < 1000 || to > 9999) {
+  if (!Number.isInteger(from) || !Number.isInteger(to) || from < NUMBER_MIN || to > NUMBER_MAX) {
     throw new Error('INVALID_RANGE')
   }
   if (to < from) {

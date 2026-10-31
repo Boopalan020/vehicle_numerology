@@ -1,3 +1,4 @@
+import { formatNumber } from '../lib/numerology.js'
 import { useLang } from '../lib/LangContext.jsx'
 
 export function ComparisonTray({ pinned, onUnpin }) {
@@ -12,11 +13,12 @@ export function ComparisonTray({ pinned, onUnpin }) {
             key={r.number}
             type="button"
             onClick={() => onUnpin(r)}
-            aria-label={t('unpin', r.number)}
+            aria-label={t('unpin', formatNumber(r.number))}
             className="flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-mono text-[11px]"
             style={{ borderColor: 'var(--accent)', color: 'var(--accent)' }}
           >
-            {r.series} · {r.number} → {r.total}
+            {r.series} · {r.fancy.length > 0 && <span aria-hidden="true">✦</span>}
+            {formatNumber(r.number)} → {r.total}
             <span aria-hidden="true">✕</span>
           </button>
         ))}

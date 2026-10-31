@@ -18,6 +18,8 @@ export function LangProvider({ children }) {
       t: (key, ...args) => translate(lang, key, ...args),
       tError: (code) => translateError(lang, code),
       bandLabel: (band) => (lang === 'ta' ? band.labelTa : band.label),
+      // Same shape as bandLabel — for fancy patterns and tiers (src/lib/fancy.js).
+      fancyLabel: (item) => (lang === 'ta' ? item.labelTa : item.label),
     }),
     [lang],
   )

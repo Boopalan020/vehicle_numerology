@@ -1,12 +1,14 @@
 import { useMemo } from 'react'
+import { formatNumber } from '../lib/numerology.js'
+import { PATTERN_BY_KEY, matchesFancyFilter } from '../lib/fancy.js'
 import { bandColorVar } from '../lib/bandColor.js'
 import { useLang } from '../lib/LangContext.jsx'
 
 // Punchcard heatmap: row = last digit (0–9), column = decade (number ÷ 10).
 // Meaningful, not arbitrary — the last digit is exactly what feeds digitSum,
 // so columns often show a real progression rather than visual noise.
-export function ScanGrid({ results, activeBand, search, selected, onSelect }) {
-  const { t, bandLabel } = useLang()
+export function ScanGrid({ results, activeBand, fancyFilter, search, selected, onSelect }) {
+  const { t, bandLabel, fancyLabel } = useLang()
 
   const { decades, byNumber, migaCount, firstMiga } = useMemo(() => {
     const map = new Map(results.map((r) => [r.number, r]))
@@ -21,7 +23,11 @@ export function ScanGrid({ results, activeBand, search, selected, onSelect }) {
   }, [results])
 
   function matches(r) {
-    return (!activeBand || r.band.key === activeBand) && (!search || String(r.number).includes(search))
+    return (
+      (!activeBand || r.band.key === activeBand) &&
+      matchesFancyFilter(r.fancy, fancyFilter) &&
+      (!search || formatNumber(r.number).includes(search))
+    )
   }
 
   return (
@@ -31,7 +37,7 @@ export function ScanGrid({ results, activeBand, search, selected, onSelect }) {
           className="mb-4 inline-flex max-w-2xl items-center gap-2 rounded-md px-3.5 py-2.5 text-xs leading-relaxed"
           style={{ background: 'rgba(30,127,92,.16)', border: '1px solid var(--band-miga)' }}
         >
-          {t('migaBadge', migaCount, firstMiga.number)}
+          {t('migaBadge', migaCount, formatNumber(firstMiga.number))}
         </p>
       )}
 
@@ -42,7 +48,7 @@ export function ScanGrid({ results, activeBand, search, selected, onSelect }) {
           <div className="mb-1 flex gap-1 pl-9">
             {decades.map((d) => (
               <span key={d} className="w-8 shrink-0 text-center font-mono text-[10px] text-muted">
-                {d}
+                {String(d).padStart(3, '0')}
               </span>
             ))}
           </div>
@@ -56,21 +62,36 @@ export function ScanGrid({ results, activeBand, search, selected, onSelect }) {
                 const r = byNumber.get(number)
                 if (!r) return <span key={d} className="h-8 w-8 shrink-0" />
                 const isSelected = selected?.number === r.number
+                const fancy = r.fancy[0]
+                const label = `${formatNumber(r.number)} → ${r.total} → ${bandLabel(r.band)}${
+                  fancy ? ` · ✦ ${fancyLabel(PATTERN_BY_KEY[fancy.key])}` : ''
+                }`
                 return (
                   <button
                     key={d}
                     type="button"
                     onClick={() => onSelect(r)}
-                    title={`${r.number} → ${r.total} → ${bandLabel(r.band)}`}
-                    aria-label={`${r.series} · ${r.number} → ${r.total} → ${bandLabel(r.band)}`}
-                    className="h-8 w-8 shrink-0 rounded transition-opacity focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-1 focus:ring-offset-background"
+                    title={label}
+                    aria-label={`${r.series} · ${label}`}
+                    className="relative h-8 w-8 shrink-0 rounded transition-opacity focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-1 focus:ring-offset-background"
                     style={{
                       background: bandColorVar(r.band.key),
                       opacity: matches(r) ? 1 : 0.22,
                       outline: isSelected ? '2px solid var(--accent)' : undefined,
                       outlineOffset: isSelected ? '1px' : undefined,
                     }}
-                  />
+                  >
+                    {/* Fancy is a corner mark, not a fill — the cell color stays
+                        the band, so the ramp still reads at a glance. */}
+                    {fancy && (
+                      <span
+                        aria-hidden="true"
+                        className={`absolute top-0.5 right-0.5 rounded-full bg-accent ring-1 ring-background ${
+                          fancy.tier === 'premium' ? 'h-2 w-2' : 'h-1.5 w-1.5'
+                        }`}
+                      />
+                    )}
+                  </button>
                 )
               })}
             </div>

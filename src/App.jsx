@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Switch } from '@heroui/react'
-import { summarize } from './lib/numerology.js'
+import { formatNumber, summarize } from './lib/numerology.js'
+import { matchesFancyFilter, summarizeFancy } from './lib/fancy.js'
 import { useLocalStorage } from './lib/useLocalStorage.js'
 import { useNumerologyWorker } from './lib/useNumerologyWorker.js'
+import { useIncrementalList } from './lib/useIncrementalList.js'
 import { useLang } from './lib/LangContext.jsx'
 import { PlateInput } from './components/PlateInput.jsx'
 import { RangeSlider } from './components/RangeSlider.jsx'
@@ -19,9 +21,49 @@ import { ComparisonTray } from './components/ComparisonTray.jsx'
 import { HistoryPanel } from './components/HistoryPanel.jsx'
 import { ScrollTopButton } from './components/ScrollTopButton.jsx'
 import { SeoContent } from './components/SeoContent.jsx'
+import { LoadMore } from './components/LoadMore.jsx'
 
 const EMPTY_COUNTS = summarize([])
+const EMPTY_FANCY_COUNTS = summarizeFancy([])
 const HISTORY_LIMIT = 8
+const CALLOUT_MIGA_LIMIT = 5
+const RESULTS_PAGE_SIZE = 240
+
+// One line above the results: how many fancy numbers the range holds, and
+// the ones that are also Miga Miga — the short list most people want.
+function FancyCallout({ results, count, onSelect }) {
+  const { t } = useLang()
+  const both = useMemo(() => results.filter((r) => r.fancy.length > 0 && r.band.key === 'miga'), [results])
+  if (count === 0) return null
+  return (
+    <p
+      className="mb-4 flex max-w-2xl flex-wrap items-center gap-x-2 gap-y-1 rounded-md px-3.5 py-2.5 font-mono text-xs leading-relaxed"
+      style={{
+        background: 'color-mix(in oklab, var(--accent) 10%, transparent)',
+        border: '1px solid color-mix(in oklab, var(--accent) 45%, transparent)',
+      }}
+    >
+      <span className="text-accent" aria-hidden="true">✦</span>
+      <span>{t('fancyCallout', count)}</span>
+      {both.length > 0 && (
+        <>
+          <span className="text-muted">· {t('fancyAlsoMiga', both.length)}</span>
+          {both.slice(0, CALLOUT_MIGA_LIMIT).map((r) => (
+            <button
+              key={r.number}
+              type="button"
+              onClick={() => onSelect(r)}
+              className="rounded font-semibold text-accent underline decoration-dotted underline-offset-2 hover:opacity-80"
+            >
+              {formatNumber(r.number)}
+            </button>
+          ))}
+          {both.length > CALLOUT_MIGA_LIMIT && <span className="text-muted">…</span>}
+        </>
+      )}
+    </p>
+  )
+}
 
 function Wordmark() {
   return (
@@ -89,6 +131,7 @@ export default function App() {
   const [calculating, setCalculating] = useState(false)
   const [results, setResults] = useState([])
   const [activeBand, setActiveBand] = useState(null)
+  const [fancyFilter, setFancyFilter] = useState(null) // null | 'all' | pattern key
   const [search, setSearch] = useState('')
   const [view, setView] = useState('tiles')
   const [selected, setSelected] = useState(null)
@@ -102,8 +145,8 @@ export default function App() {
     document.documentElement.classList.toggle('dark', dark)
   }, [dark])
 
-  // Runs on a Web Worker (design doc §7) so a large range — up to ~9,000 rows
-  // for 1000–9999 — never blocks the main thread. Results stream back in
+  // Runs on a Web Worker (design doc §7) so a large range — up to 9,999 rows
+  // for 0001–9999 — never blocks the main thread. Results stream back in
   // chunks and get pushed into state as they arrive, so `calculating` reflects
   // real work instead of an artificial delay, and tiles/cells for a big range
   // appear progressively rather than freezing the tab until it's all done.
@@ -113,6 +156,7 @@ export default function App() {
     setErrorCode('')
     setSelected(null)
     setActiveBand(null)
+    setFancyFilter(null)
     setResults([])
 
     let collected = []
@@ -158,14 +202,21 @@ export default function App() {
   }
 
   const counts = useMemo(() => (results.length ? summarize(results) : EMPTY_COUNTS), [results])
+  const fancyCounts = useMemo(() => (results.length ? summarizeFancy(results) : EMPTY_FANCY_COUNTS), [results])
 
+  // Band, fancy pattern and number search all narrow together (AND).
   const filtered = useMemo(
     () =>
       results.filter(
-        (r) => (!activeBand || r.band.key === activeBand) && (!search || String(r.number).includes(search)),
+        (r) =>
+          (!activeBand || r.band.key === activeBand) &&
+          matchesFancyFilter(r.fancy, fancyFilter) &&
+          (!search || formatNumber(r.number).includes(search)),
       ),
-    [results, activeBand, search],
+    [results, activeBand, fancyFilter, search],
   )
+  // Tiles and Ledger draw a page at a time; Scan draws its own grid in full.
+  const page = useIncrementalList(filtered, RESULTS_PAGE_SIZE)
 
   return (
     <>
@@ -230,7 +281,14 @@ export default function App() {
       {/* Main: fixed filter header + independently-scrolling results below it */}
       <main className="flex flex-col lg:col-start-2 lg:row-start-1 lg:overflow-hidden">
         <div className="flex shrink-0 flex-col gap-3 border-b border-border p-5">
-          <SummaryStrip counts={counts} activeBand={activeBand} onToggle={setActiveBand} />
+          <SummaryStrip
+            counts={counts}
+            activeBand={activeBand}
+            onToggle={setActiveBand}
+            fancyCounts={fancyCounts}
+            fancyFilter={fancyFilter}
+            onFancyChange={setFancyFilter}
+          />
           <div className="flex items-center gap-3">
             <input
               value={search}
@@ -250,6 +308,7 @@ export default function App() {
               {t('calculatingCount', results.length)}
             </div>
           )}
+          {!calculating && <FancyCallout results={results} count={fancyCounts.all} onSelect={setSelected} />}
           {calculating && results.length === 0 ? (
             <div className="flex items-center gap-2 font-mono text-xs text-muted">
               <Spinner />
@@ -263,6 +322,7 @@ export default function App() {
                 <ScanGrid
                   results={results}
                   activeBand={activeBand}
+                  fancyFilter={fancyFilter}
                   search={search}
                   selected={selected}
                   onSelect={setSelected}
@@ -273,9 +333,10 @@ export default function App() {
           ) : filtered.length === 0 ? (
             <p className="font-mono text-xs text-muted">{t('noMatch')}</p>
           ) : view === 'tiles' ? (
+            <>
             <div className="grid grid-cols-[repeat(auto-fill,minmax(19rem,1fr))] gap-2.5">
               <AnimatePresence>
-                {filtered.map((r) => (
+                {page.visible.map((r) => (
                   <motion.div
                     key={`${r.series}-${r.number}`}
                     initial={{ opacity: 0, y: 6 }}
@@ -293,8 +354,13 @@ export default function App() {
                 ))}
               </AnimatePresence>
             </div>
+            {page.hasMore && <LoadMore shown={page.visible.length} total={page.total} onMore={page.showMore} />}
+            </>
           ) : (
-            <LedgerTable results={filtered} selected={selected} onSelect={setSelected} />
+            <>
+              <LedgerTable results={page.visible} selected={selected} onSelect={setSelected} />
+              {page.hasMore && <LoadMore shown={page.visible.length} total={page.total} onMore={page.showMore} />}
+            </>
           )}
         </div>
       </main>

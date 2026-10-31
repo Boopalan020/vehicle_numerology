@@ -1,6 +1,33 @@
-import { digitSum, letterBreakdown } from '../lib/numerology.js'
+import { digitSum, formatNumber, letterBreakdown } from '../lib/numerology.js'
+import { FANCY_TIERS, PATTERN_BY_KEY } from '../lib/fancy.js'
 import { bandColorVar, bandTintVar } from '../lib/bandColor.js'
 import { useLang } from '../lib/LangContext.jsx'
+
+// "Mirror · Fancy" plus any other patterns the number also matches.
+function FancySummary({ fancy }) {
+  const { t, fancyLabel } = useLang()
+  if (fancy.length === 0) return null
+  const [primary, ...rest] = fancy
+  return (
+    <div
+      className="mb-4 rounded-md border px-3 py-2 font-mono text-xs"
+      style={{
+        borderColor: 'color-mix(in oklab, var(--accent) 45%, transparent)',
+        background: 'color-mix(in oklab, var(--accent) 8%, transparent)',
+      }}
+    >
+      <div className="mb-0.5 text-[10.5px] uppercase tracking-wider text-muted">{t('fancyPattern')}</div>
+      <div className="font-semibold text-accent">
+        ✦ {fancyLabel(PATTERN_BY_KEY[primary.key])} · {fancyLabel(FANCY_TIERS[primary.tier])}
+      </div>
+      {rest.length > 0 && (
+        <div className="mt-0.5 text-muted">
+          {t('fancyAlso', rest.map((m) => fancyLabel(PATTERN_BY_KEY[m.key])).join(', '))}
+        </div>
+      )}
+    </div>
+  )
+}
 
 function Breakdown({ result }) {
   const { t, bandLabel } = useLang()
@@ -8,11 +35,12 @@ function Breakdown({ result }) {
   const seriesTotal = rows.reduce((s, r) => s + r.value, 0)
   const digitTotal = digitSum(result.number)
   const reduced = result.reductionPath.length > 1
+  const number = formatNumber(result.number)
 
   return (
     <>
       <div className="font-mono text-sm text-muted">
-        {result.series} · {result.number}
+        {result.series} · <span className={result.fancy.length ? 'font-semibold text-accent' : ''}>{number}</span>
       </div>
       <div className="mb-1 font-mono text-4xl font-bold leading-none lg:text-5xl">{result.total}</div>
       <div
@@ -22,6 +50,7 @@ function Breakdown({ result }) {
         <span className="h-2 w-2 rounded-full" style={{ background: bandColorVar(result.band.key) }} />
         {bandLabel(result.band)}
       </div>
+      <FancySummary fancy={result.fancy} />
       <div className="mb-4 overflow-hidden rounded-md border border-border font-mono text-xs">
         {rows.map((r, i) => (
           <div key={i} className="flex justify-between border-b border-border px-3 py-2">
@@ -34,7 +63,7 @@ function Breakdown({ result }) {
           <span>{seriesTotal}</span>
         </div>
         <div className="flex justify-between border-b border-border px-3 py-2">
-          <span className="text-muted">{t('digitSumOf', result.number)}</span>
+          <span className="text-muted">{t('digitSumOf', number)}</span>
           <span>{digitTotal}</span>
         </div>
         <div className={`flex justify-between px-3 py-2 font-bold ${reduced ? 'border-b border-border' : 'bg-background'}`}>

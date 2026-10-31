@@ -113,6 +113,19 @@ describe('calculateRange', () => {
     expect(() => calculateRange('TN09AB', 1020, 1000)).toThrow('TO_BEFORE_FROM')
   })
 
+  it('accepts the full 0001–9999 plate range, not just 1000–9999', () => {
+    const low = calculateRange('TN09AB', 1, 9)
+    expect(low).toHaveLength(9)
+    // TN09AB = 21, + digit sum of 0007 = 7 → 28 (Adhishtam)
+    expect(calculateOne('TN09AB', 7).total).toBe(28)
+    expect(calculateRange('TN09AB', 1, 9999)).toHaveLength(9999)
+  })
+
+  it('rejects 0000 and anything past 9999', () => {
+    expect(() => calculateRange('TN09AB', 0, 5)).toThrow('INVALID_RANGE')
+    expect(() => calculateRange('TN09AB', 9990, 10000)).toThrow('INVALID_RANGE')
+  })
+
   it('reduces a previously-unlisted total instead of leaving it unclassified (TN09AB, 9975–9993)', () => {
     const results = calculateRange('TN09AB', 9975, 9993)
     expect(results).toHaveLength(19)

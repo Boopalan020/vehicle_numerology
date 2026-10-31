@@ -34,9 +34,10 @@ This is the core workflow — five steps, top to bottom on the left-hand panel
    leave it blank for a one-letter series. Typing auto-advances to the next
    box; backspace on an empty box jumps back.
 2. **Set the range.** Drag either end of the slider, or type directly into
-   the `From`/`To` number fields on each side of it. Both must be 4-digit
-   numbers (1000–9999), and `To` must be at or after `From`. This is the
-   block of registration numbers you're choosing between.
+   the `From`/`To` number fields on each side of it. Both must be between
+   `0001` and `9999` (type `7` and it becomes `0007`), and `To` must be at
+   or after `From`. This is the block of registration numbers you're
+   choosing between.
 3. **Press Calculate.** Every number in the range is scored — the button
    shows a spinner while it works, and for a large range you'll see a running
    count as results stream in rather than a frozen screen.
@@ -79,6 +80,31 @@ clicked to re-run them instantly.
 The row of pill-shaped chips above the results (Miga Miga, Adhishtam, Sumar,
 Dhuradhishtam, Sodhanai, Abathu) shows how many results fall in each band.
 Click one to show only that band; click it again to clear the filter.
+
+### Fancy numbers
+
+Separately from the luck bands, Enn flags numbers with an eye-catching digit
+pattern. Fancy numbers are marked in the brass accent with a **✦** and a
+pattern tag on every view: a brass corner dot in Scan, and a **Pattern**
+column in Ledger. A note above the results counts them and names any that
+are also Miga Miga.
+
+| Pattern | Example | Tier |
+| - | - | - |
+| Quad | 7777 | Premium |
+| Sequence | 1234, 6543 | Premium |
+| Single digit | 0001–0009 | Premium |
+| Round | 5000 (Premium), 9900 (Fancy) | Premium / Fancy |
+| Mirror | 7337, 1001 | Fancy |
+| Repeating pair | 1212 | Fancy |
+| Double pair | 1122 | Fancy |
+| Triple | 1119, 9111 | Fancy |
+
+The **✦ Fancy** chip at the end of the band filter shows only fancy numbers.
+While it's on, a second row lets you narrow to a single pattern. It combines
+with the band chips, so **Miga Miga + Fancy** gives you numbers that are both
+auspicious and good-looking. These patterns are Enn's own rules, not the
+RTO's official fancy-number list.
 
 ### Search by number
 
@@ -135,6 +161,6 @@ to jump straight back to the controls instead of scrolling all the way up.
 ## What's under the hood, briefly
 
 React + Vite, Tailwind v4, HeroUI. The actual number-crunching runs in a Web
-Worker so a full 1000–9999 range doesn't freeze the tab. See `src/lib/numerology.js`
+Worker so a full 0001–9999 range doesn't freeze the tab. See `src/lib/numerology.js`
 for the calculation itself and its test suite for the exact rules encoded from
-the source chart.
+the source chart, and `src/lib/fancy.js` for the fancy-number patterns.
