@@ -7,7 +7,21 @@
     <link rel="icon" type="image/png" href="/enn-icon-dark.png" media="(prefers-color-scheme: dark)" />
     <link rel="apple-touch-icon" href="/enn-icon-light.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#0b0b0f" />
+    <script>
+      // Apply a saved light/dark choice before first paint (see src/lib/useTheme.js).
+      try {
+        var theme = JSON.parse(localStorage.getItem('enn:theme'))
+        if (theme === 'light' || theme === 'dark') document.documentElement.setAttribute('data-theme', theme)
+      } catch (e) {}
+    </script>
+    <meta name="theme-color" content="#eef1f4" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1e2227" media="(prefers-color-scheme: dark)" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Catamaran:wght@400;600;700;800&family=Saira+Condensed:wght@600;700&display=swap"
+    />
 
     <title>Enn — Vehicle Numerology Calculator (எண் கணிதம்)</title>
     <meta

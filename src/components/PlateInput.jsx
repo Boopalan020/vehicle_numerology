@@ -1,4 +1,6 @@
 import { useRef } from 'react'
+import { useLang } from '../lib/LangContext.jsx'
+import { PlateFrame } from './Plate.jsx'
 
 // AA99AA or AA99A: state letters, district digits, then a one- or
 // two-letter series — RTOs vary on whether that suffix is one letter
@@ -6,7 +8,8 @@ import { useRef } from 'react'
 const KIND = ['letter', 'letter', 'digit', 'digit', 'letter', 'letter']
 const OPTIONAL_INDEX = 5
 
-export function PlateInput({ value, onChange, size = 'md' }) {
+export function PlateInput({ value, onChange }) {
+  const { t } = useLang()
   const chars = (value ?? '').padEnd(6, ' ').slice(0, 6).split('')
   const refs = useRef([])
 
@@ -44,19 +47,13 @@ export function PlateInput({ value, onChange, size = 'md' }) {
     onChange(text)
   }
 
-  const cellSize =
-    size === 'lg'
-      ? 'h-13 w-11 text-lg'
-      : size === 'sm'
-        ? 'h-9 w-8 text-sm'
-        : 'h-10 w-9 text-base'
+  const cellSize = 'h-16 w-9 sm:w-10'
 
   const nodes = []
   for (let i = 0; i < 6; i++) {
     if (i === 2 || i === 4) {
-      nodes.push(<span key={`gap-${i}`} aria-hidden="true" className="w-1.5 shrink-0" />)
+      nodes.push(<span key={`gap-${i}`} aria-hidden="true" className="w-3 shrink-0 sm:w-4" />)
     }
-    const kindLabel = KIND[i] === 'letter' ? 'letter' : 'digit'
     const isOptional = i === OPTIONAL_INDEX
     nodes.push(
       <input
@@ -65,19 +62,26 @@ export function PlateInput({ value, onChange, size = 'md' }) {
         value={chars[i].trim()}
         onChange={(e) => setChar(i, e.target.value)}
         onKeyDown={(e) => handleKeyDown(i, e)}
+        onFocus={(e) => e.target.select()}
         inputMode={KIND[i] === 'digit' ? 'numeric' : 'text'}
+        autoCapitalize="characters"
+        autoComplete="off"
         maxLength={1}
-        aria-label={`Plate ${kindLabel}, position ${i + 1} of 6${isOptional ? ' (optional)' : ''}`}
-        className={`${cellSize} shrink-0 rounded bg-surface text-center font-mono font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-1 focus:ring-offset-background ${
-          isOptional ? 'border-[1.5px] border-dashed border-muted' : 'border-[1.5px] border-accent'
+        aria-label={t('plateCell', t(KIND[i] === 'letter' ? 'plateLetter' : 'plateDigit'), i + 1, isOptional)}
+        // Cells read as plate lettering, not form boxes: no border, just an
+        // underline that marks each slot — dashed on the optional sixth.
+        className={`${cellSize} shrink-0 rounded-none border-b-[3px] bg-transparent text-center font-plate text-[3.25rem] leading-none font-bold text-plate-ink focus:bg-selected focus:outline-none ${
+          isOptional ? 'border-dashed border-[#9aa3ad]' : 'border-[#c9d0d8]'
         }`}
       />,
     )
   }
 
   return (
-    <div className="flex" onPaste={handlePaste}>
-      {nodes}
-    </div>
+    <PlateFrame>
+      <div className="flex items-center" onPaste={handlePaste}>
+        {nodes}
+      </div>
+    </PlateFrame>
   )
 }

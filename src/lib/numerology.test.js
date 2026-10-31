@@ -3,6 +3,7 @@ import {
   calculateOne,
   calculateRange,
   classify,
+  compareBestFirst,
   digitSum,
   isValidPlateSeries,
   iterateRange,
@@ -10,8 +11,27 @@ import {
   letterValue,
   reduceToBand,
   seriesValue,
+  spacedSeries,
   summarize,
 } from './numerology.js'
+
+describe('spacedSeries', () => {
+  it('spaces a series the way the plate prints it, for one- and two-letter series', () => {
+    expect(spacedSeries('TN09AB')).toBe('TN 09 AB')
+    expect(spacedSeries('tn09l')).toBe('TN 09 L')
+  })
+})
+
+describe('compareBestFirst', () => {
+  it('orders by band, best first, then by number within a band', () => {
+    const sorted = calculateRange('TN09AB', 9975, 9993).sort(compareBestFirst)
+    const keys = sorted.map((r) => r.band.key)
+    // Every band appears in one contiguous run, in best-to-worst order.
+    expect(keys).toEqual([...keys].sort((a, b) => ['adhishtam', 'sumar', 'dhuradhishtam', 'sodhanai'].indexOf(a) - ['adhishtam', 'sumar', 'dhuradhishtam', 'sodhanai'].indexOf(b)))
+    expect(sorted.slice(0, 3).map((r) => r.number)).toEqual([9975, 9978, 9979])
+    expect(sorted.at(-1).number).toBe(9980) // the only Sodhanai
+  })
+})
 
 describe('iterateRange', () => {
   it('yields the same results calculateRange collects into an array', () => {

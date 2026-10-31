@@ -1,92 +1,114 @@
 @import "tailwindcss";
-@import "@heroui/styles";
-
-@custom-variant dark (&:is(.dark *));
 
 /*
-  Enn — registration-ledger identity.
-  Overrides HeroUI's semantic tokens (defined in @heroui/styles/themes/default/variables.css)
-  with the ink/stone/brass palette from the design doc. Same variable names, same
-  @theme inline mapping HeroUI already ships — this file only changes the values.
+  Enn — number-plate identity (redesign, see README "Design").
+  White plates on road grey, ink plate lettering, turmeric for the one main
+  action, plate-strip blue for fancy numbers. Plates stay white in both
+  themes — real plates are.
+
+  Theme: follows the device until the viewer picks one with the theme
+  button, which sets <html data-theme="light|dark"> (src/lib/useTheme.js).
+  The dark tokens therefore appear twice: once for "device is dark and no
+  choice made", once for "chose dark". Keep the two blocks identical.
 */
 :root {
   color-scheme: light;
 
-  --background: #eaebe3;         /* stone-050 */
-  --foreground: #1b1a17;         /* ink text, light mode */
+  --background: #eef1f4;         /* road grey */
+  --surface: #ffffff;            /* plate white */
+  --foreground: #16181d;         /* ink — 17.8:1 on white */
+  --muted: #545b66;              /* 6.9:1 on white */
+  --border: #e3e7ec;
+  --border-strong: #c9d0d8;
 
-  --surface: #f5f4ee;
-  --surface-foreground: var(--foreground);
-  --surface-secondary: #e3e2d7;
-  --surface-tertiary: #d8d7ca;
+  --accent: #f2b705;             /* turmeric — only ever a fill under ink text (9.8:1) */
+  --accent-foreground: #16181d;
+  --selected: #fff4cc;           /* turmeric tint for the selected row */
 
-  --overlay: #f5f4ee;
-  --overlay-foreground: var(--foreground);
+  --fancy: #0b4aa2;              /* plate-strip blue — 8.3:1 on white */
+  --danger: #b42318;
 
-  --muted: #78766c;
+  --plate: #ffffff;
+  --plate-ink: #16181d;
+  --plate-strip: #0b4aa2;
 
-  --default: #dedcd0;
-  --default-foreground: var(--foreground);
-
-  --accent: #7a5714;             /* brass-ink — 5.5:1 on stone-050, AA for body text */
-  --accent-foreground: #f5f4ee;
-
-  --field-background: #f5f4ee;
-  --field-foreground: var(--foreground);
-  --field-placeholder: var(--muted);
-  --field-border: #d3d2c6;
-
-  --border: #d3d2c6;
-  --separator: #d3d2c6;
-  --focus: var(--accent);
-  --link: var(--accent);
-
-  /* Enn's own ordinal luck-band ramp — deliberately separate from --accent,
-     see design doc §3 ("semantic color is separate from the accent hue"). */
-  --band-miga: #1e7f5c;
-  --band-adhishtam: #5b9b6f;
-  --band-sumar: #a6883a;
-  --band-dhuradhishtam: #b9702f;
-  --band-sodhanai: #a94836;
-  --band-abathu: #7a2323;
-  --band-unlisted: #6b6b63;
+  /* Verdict ramp, best to worst. Each is ≥4.5:1 on white and always shown
+     with a word and an icon, never colour alone. */
+  --band-miga: #0e6b35;
+  --band-adhishtam: #2f7d1f;
+  --band-sumar: #7a5c00;
+  --band-dhuradhishtam: #b4500b;
+  --band-sodhanai: #b42318;
+  --band-abathu: #7d1414;
+  --band-unlisted: #545b66;
 }
 
-.dark,
-[data-theme="dark"] {
+:root[data-theme="dark"] {
   color-scheme: dark;
 
-  --background: #15140f;         /* ink-900 */
-  --foreground: #f1eee4;
+  --background: #1e2227;
+  --surface: #272c32;
+  --foreground: #f1f3f5;
+  --muted: #a9b1bb;
+  --border: #353b42;
+  --border-strong: #4a525b;
 
-  --surface: #1e1c16;
-  --surface-foreground: var(--foreground);
-  --surface-secondary: #26241c;
-  --surface-tertiary: #302d23;
+  --selected: #3a3220;
+  --fancy: #7fb2ff;
+  --danger: #ff7f73;
 
-  --overlay: #1e1c16;
-  --overlay-foreground: var(--foreground);
-
-  --muted: #b7b3a6;
-
-  --default: #2b291f;
-  --default-foreground: var(--foreground);
-
-  --accent: #d8aa55;             /* brass, dark-safe — 8.6:1 on ink-900 */
-  --accent-foreground: #15140f;
-
-  --field-background: #1e1c16;
-  --field-foreground: var(--foreground);
-  --field-border: #34322a;
-
-  --border: #34322a;
-  --separator: #34322a;
-  --focus: var(--accent);
-  --link: var(--accent);
+  --band-miga: #4fc883;
+  --band-adhishtam: #9bd46a;
+  --band-sumar: #e2bc4a;
+  --band-dhuradhishtam: #f29a5c;
+  --band-sodhanai: #ff7f73;
+  --band-abathu: #f5b4b4;
+  --band-unlisted: #a9b1bb;
 }
 
-/* Enn's tokens as first-class Tailwind utilities: bg-band-abathu, text-band-unlisted, font-display, etc. */
-@theme {
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+
+    --background: #1e2227;         /* asphalt */
+    --surface: #272c32;
+    --foreground: #f1f3f5;
+    --muted: #a9b1bb;
+    --border: #353b42;
+    --border-strong: #4a525b;
+
+    --selected: #3a3220;
+    --fancy: #7fb2ff;
+    --danger: #ff7f73;
+
+    /* Lighter ramp for dark surfaces — all ≥5.7:1 on --surface. */
+    --band-miga: #4fc883;
+    --band-adhishtam: #9bd46a;
+    --band-sumar: #e2bc4a;
+    --band-dhuradhishtam: #f29a5c;
+    --band-sodhanai: #ff7f73;
+    --band-abathu: #f5b4b4;
+    --band-unlisted: #a9b1bb;
+  }
+}
+
+/* Tokens as Tailwind utilities: bg-surface, text-muted, border-border, text-band-miga … */
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-selected: var(--selected);
+  --color-fancy: var(--fancy);
+  --color-danger: var(--danger);
+  --color-plate: var(--plate);
+  --color-plate-ink: var(--plate-ink);
+  --color-plate-strip: var(--plate-strip);
+
   --color-band-miga: var(--band-miga);
   --color-band-adhishtam: var(--band-adhishtam);
   --color-band-sumar: var(--band-sumar);
@@ -94,18 +116,43 @@
   --color-band-sodhanai: var(--band-sodhanai);
   --color-band-abathu: var(--band-abathu);
   --color-band-unlisted: var(--band-unlisted);
+}
 
-  --font-display: "Iowan Old Style", "Sitka Text", Palatino, "Palatino Linotype", Georgia, serif;
-  --font-sans: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
-  --font-mono: ui-monospace, "Cascadia Mono", "Segoe UI Mono", Consolas, "Liberation Mono", monospace;
+@theme {
+  /* Catamaran: one family for English and Tamil UI text. Saira Condensed:
+     plate characters only. Loaded from Google Fonts in index.html. */
+  --font-sans: "Catamaran", "Noto Sans Tamil", system-ui, sans-serif;
+  --font-plate: "Saira Condensed", "Arial Narrow", sans-serif;
 
-  /* Design doc §2 breakpoints: mobile 320–767 / tablet+laptop 768–1199 / large 1200+.
-     Tailwind's default `md` (768px) already lines up; `lg` is redefined here so it
-     lines up with "large" (1200px) instead of the default 1024px. */
+  /* Phone up to 767px / tablet+laptop 768–1199 / large 1200+. `lg` is
+     redefined from Tailwind's 1024px default to line up with "large". */
   --breakpoint-lg: 75rem;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
   margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.5;
   font-variant-numeric: tabular-nums;
+}
+
+:focus-visible {
+  outline: 3px solid var(--fancy);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

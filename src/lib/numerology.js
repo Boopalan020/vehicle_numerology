@@ -16,6 +16,11 @@ export function formatNumber(n) {
   return String(n).padStart(4, '0')
 }
 
+// "TN09AB" -> "TN 09 AB", the way it's printed on the plate.
+export function spacedSeries(series) {
+  return series.replace(/^([A-Z]{2})(\d{2})([A-Z]{1,2})$/i, '$1 $2 $3').toUpperCase()
+}
+
 // O(1) letter lookup, built once — replaces the original's per-letter O(8)
 // scan through `tabularValuesMap.entries()` with `.includes()`.
 const LETTER_GROUPS = [
@@ -96,6 +101,15 @@ export const ALL_BANDS = [...BANDS, UNLISTED_BAND]
 
 // The published bands only — what the UI shows as filterable categories.
 export const DISPLAY_BANDS = BANDS
+
+// 0 = best. ALL_BANDS is already best-to-worst, with the fallback last.
+export const BAND_RANK = Object.fromEntries(ALL_BANDS.map((b, i) => [b.key, i]))
+
+// "Best first" sort: luckier band first, then lower number within a band, so
+// the order is stable and the cheapest-looking pick of equals comes first.
+export function compareBestFirst(a, b) {
+  return BAND_RANK[a.band.key] - BAND_RANK[b.band.key] || a.number - b.number
+}
 
 const TOTAL_TO_BAND = new Map(BANDS.flatMap((band) => band.values.map((v) => [v, band])))
 

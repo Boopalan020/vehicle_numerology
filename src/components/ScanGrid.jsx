@@ -1,70 +1,64 @@
 import { useMemo } from 'react'
-import { formatNumber } from '../lib/numerology.js'
-import { PATTERN_BY_KEY, matchesFancyFilter } from '../lib/fancy.js'
+import { DISPLAY_BANDS, formatNumber } from '../lib/numerology.js'
+import { PATTERN_BY_KEY } from '../lib/fancy.js'
 import { bandColorVar } from '../lib/bandColor.js'
 import { useLang } from '../lib/LangContext.jsx'
+import { VerdictIcon } from './Verdict.jsx'
 
-// Punchcard heatmap: row = last digit (0–9), column = decade (number ÷ 10).
-// Meaningful, not arbitrary — the last digit is exactly what feeds digitSum,
-// so columns often show a real progression rather than visual noise.
-export function ScanGrid({ results, activeBand, fancyFilter, search, selected, onSelect }) {
-  const { t, bandLabel, fancyLabel } = useLang()
+// Grid view: row = last digit (0–9), column = ten numbers (number ÷ 10).
+// The last digit is exactly what feeds the digit sum, so columns show a real
+// progression. Kept for big blocks, where clusters of good numbers and fancy
+// numbers are easier to spot here than in a long list. Tablet and up only.
+export function ScanGrid({ results, isMatch, selected, onSelect }) {
+  const { t, verdict, bandLabel, fancyLabel } = useLang()
 
-  const { decades, byNumber, migaCount, firstMiga } = useMemo(() => {
-    const map = new Map(results.map((r) => [r.number, r]))
-    const decadeSet = new Set(results.map((r) => Math.floor(r.number / 10)))
-    const migas = results.filter((r) => r.band.key === 'miga')
-    return {
-      decades: [...decadeSet].sort((a, b) => a - b),
-      byNumber: map,
-      migaCount: migas.length,
-      firstMiga: migas[0],
-    }
-  }, [results])
-
-  function matches(r) {
-    return (
-      (!activeBand || r.band.key === activeBand) &&
-      matchesFancyFilter(r.fancy, fancyFilter) &&
-      (!search || formatNumber(r.number).includes(search))
-    )
-  }
+  const { decades, byNumber } = useMemo(
+    () => ({
+      byNumber: new Map(results.map((r) => [r.number, r])),
+      decades: [...new Set(results.map((r) => Math.floor(r.number / 10)))].sort((a, b) => a - b),
+    }),
+    [results],
+  )
 
   return (
-    <div>
-      {migaCount > 0 && (
-        <p
-          className="mb-4 inline-flex max-w-2xl items-center gap-2 rounded-md px-3.5 py-2.5 text-xs leading-relaxed"
-          style={{ background: 'rgba(30,127,92,.16)', border: '1px solid var(--band-miga)' }}
-        >
-          {t('migaBadge', migaCount, formatNumber(firstMiga.number))}
-        </p>
-      )}
+    <div className="flex flex-col gap-3">
+      <p className="m-0 max-w-2xl text-[15px] text-muted">{t('gridHint')}</p>
 
-      <p className="mb-3 font-mono text-[10.5px] text-muted">{t('scanAxisNote')}</p>
+      <ul className="m-0 flex list-none flex-wrap gap-x-4 gap-y-1 p-0 text-sm">
+        {DISPLAY_BANDS.map((b) => (
+          <li key={b.key} className="flex items-center gap-1.5 font-semibold" style={{ color: bandColorVar(b.key) }}>
+            <span aria-hidden="true" className="h-3.5 w-3.5 rounded-sm" style={{ background: bandColorVar(b.key) }} />
+            <VerdictIcon bandKey={b.key} size={13} />
+            {verdict(b)}
+          </li>
+        ))}
+        <li className="flex items-center gap-1.5 font-semibold text-fancy">
+          <span aria-hidden="true" className="h-2.5 w-2.5 rounded-full bg-fancy" />
+          {t('fancy')}
+        </li>
+      </ul>
 
       <div className="overflow-x-auto pb-1">
         <div className="inline-block">
-          <div className="mb-1 flex gap-1 pl-9">
+          <div className="mb-1 flex gap-1 pl-10">
             {decades.map((d) => (
-              <span key={d} className="w-8 shrink-0 text-center font-mono text-[10px] text-muted">
+              <span key={d} className="w-9 shrink-0 text-center font-plate text-sm font-semibold text-muted">
                 {String(d).padStart(3, '0')}
               </span>
             ))}
           </div>
           {Array.from({ length: 10 }, (_, digit) => (
             <div key={digit} className="mb-1 flex items-center gap-1">
-              <span className="sticky left-0 w-8 shrink-0 bg-background pr-1 text-right font-mono text-[10px] text-muted">
+              <span className="sticky left-0 w-9 shrink-0 bg-background pr-1.5 text-right font-plate text-sm font-semibold text-muted">
                 {digit}
               </span>
               {decades.map((d) => {
-                const number = d * 10 + digit
-                const r = byNumber.get(number)
-                if (!r) return <span key={d} className="h-8 w-8 shrink-0" />
+                const r = byNumber.get(d * 10 + digit)
+                if (!r) return <span key={d} className="h-9 w-9 shrink-0" />
                 const isSelected = selected?.number === r.number
                 const fancy = r.fancy[0]
-                const label = `${formatNumber(r.number)} → ${r.total} → ${bandLabel(r.band)}${
-                  fancy ? ` · ✦ ${fancyLabel(PATTERN_BY_KEY[fancy.key])}` : ''
+                const label = `${formatNumber(r.number)}: ${verdict(r.band)} (${bandLabel(r.band)}, ${r.total})${
+                  fancy ? `, ✦ ${fancyLabel(PATTERN_BY_KEY[fancy.key])}` : ''
                 }`
                 return (
                   <button
@@ -72,22 +66,18 @@ export function ScanGrid({ results, activeBand, fancyFilter, search, selected, o
                     type="button"
                     onClick={() => onSelect(r)}
                     title={label}
-                    aria-label={`${r.series} · ${label}`}
-                    className="relative h-8 w-8 shrink-0 rounded transition-opacity focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-1 focus:ring-offset-background"
-                    style={{
-                      background: bandColorVar(r.band.key),
-                      opacity: matches(r) ? 1 : 0.22,
-                      outline: isSelected ? '2px solid var(--accent)' : undefined,
-                      outlineOffset: isSelected ? '1px' : undefined,
-                    }}
+                    aria-label={label}
+                    aria-current={isSelected ? 'true' : undefined}
+                    className={`relative h-9 w-9 shrink-0 rounded-md ${isSelected ? 'ring-[3px] ring-foreground ring-offset-2 ring-offset-background' : ''}`}
+                    style={{ background: bandColorVar(r.band.key), opacity: isMatch(r) ? 1 : 0.2 }}
                   >
-                    {/* Fancy is a corner mark, not a fill — the cell color stays
-                        the band, so the ramp still reads at a glance. */}
+                    {/* Fancy is a corner mark, not a fill — the cell colour
+                        stays the verdict, so the ramp still reads at a glance. */}
                     {fancy && (
                       <span
                         aria-hidden="true"
-                        className={`absolute top-0.5 right-0.5 rounded-full bg-accent ring-1 ring-background ${
-                          fancy.tier === 'premium' ? 'h-2 w-2' : 'h-1.5 w-1.5'
+                        className={`absolute top-1 right-1 rounded-full bg-fancy ring-2 ring-white ${
+                          fancy.tier === 'premium' ? 'h-2.5 w-2.5' : 'h-2 w-2'
                         }`}
                       />
                     )}
@@ -99,7 +89,7 @@ export function ScanGrid({ results, activeBand, fancyFilter, search, selected, o
         </div>
       </div>
 
-      <p className="mt-3 font-mono text-[10.5px] text-muted">{t('scanScrollNote')}</p>
+      <p className="m-0 text-sm text-muted">{t('gridScrollHint')}</p>
     </div>
   )
 }

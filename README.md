@@ -25,69 +25,74 @@ your browser data and it's gone.
 
 ## Finding the right number
 
-This is the core workflow — five steps, top to bottom on the left-hand panel
-(or the top panel on a phone/tablet).
+This is the core workflow: top to bottom in the left column on a computer, or
+the first screen on a phone.
 
-1. **Enter the plate series.** Type into the boxed cells: two letters, two
-   digits, then one or two more letters — e.g. `TN` `09` `AB`, or `TN` `09`
-   `L` if your series only uses one trailing letter. The last box is optional;
-   leave it blank for a one-letter series. Typing auto-advances to the next
-   box; backspace on an empty box jumps back.
-2. **Set the range.** Drag either end of the slider, or type directly into
-   the `From`/`To` number fields on each side of it. Both must be between
-   `0001` and `9999` (type `7` and it becomes `0007`), and `To` must be at
-   or after `From`. This is the block of registration numbers you're
-   choosing between.
-3. **Press Calculate.** Every number in the range is scored — the button
-   shows a spinner while it works, and for a large range you'll see a running
-   count as results stream in rather than a frozen screen.
-4. **Scan the results** using whichever view suits you (see below) — look
-   for a good band, or use the band filter to only show the ones you'd
-   actually consider.
-5. **Click any result** to open its full breakdown, and pin the ones you're
-   deciding between so you can compare them side by side.
+1. **Enter your plate series.** Type it straight onto the plate: two letters,
+   two numbers, then one or two more letters, e.g. `TN 09 AB`, or `TN 09 L`
+   if your series uses one trailing letter (leave the last, dashed slot
+   blank). Typing moves to the next slot by itself; backspace on an empty
+   slot goes back. You can also paste a whole series.
+2. **Enter the numbers you can choose from.** Type the first and last number
+   of the block the RTO or dealer has open into **From** and **To**. Both
+   must be between `0001` and `9999` (type `7` and it becomes `0007`), and
+   `To` must be the same as `From` or higher.
+3. **Press Check numbers.** The button shows how many numbers it will check.
+   Every number is scored in your browser; for a big block you'll see a
+   running count as results arrive.
+4. **Read the results, luckiest first.** A one-line summary and a coloured
+   bar show how the whole block splits across the verdicts. Tap a verdict
+   (e.g. **Lucky**) to show only those numbers.
+5. **Tap any number** to see why it got its verdict, and pin (☆) the ones
+   you're deciding between to compare them side by side.
+
+On a phone, once results are in, the form folds into a small plate header.
+Tap the back arrow on it to change the plate or numbers.
 
 ## Reading a result
 
-Every candidate number gets a **total**, and that total is classified into a
-named band — from best to worst as the chart itself defines it:
+Each number gets a plain-language **verdict**, with the chart's own band
+name underneath. Verdicts always come with an icon too, so they never rely
+on colour alone:
 
-| Band | Tamil | Meaning |
+| Verdict | Tamil | Chart band |
 | - | - | - |
-| Miga Miga Adhishtam | மிக மிக அதிர்ஷ்டம் | Highly auspicious |
-| Adhishtam | அதிர்ஷ்டம் | Auspicious |
-| Sumar | சுமார் | Moderate |
-| Dhuradhishtam | துர அதிர்ஷ்டம் | Weak luck |
-| Sodhanai | சோதனை மிக்கது | Testing / trials |
-| Abathu | ஆபத்து | Inauspicious |
+| Very lucky | மிக நல்லது | Miga Miga Adhishtam (மிக மிக அதிர்ஷ்டம்) |
+| Lucky | நல்லது | Adhishtam (அதிர்ஷ்டம்) |
+| Average | சுமார் | Sumar (சுமார்) |
+| Weak | குறைவு | Dhuradhishtam (துர அதிர்ஷ்டம்) |
+| Trouble | சோதனை | Sodhanai (சோதனை மிக்கது) |
+| Avoid | தவிர்க்கவும் | Abathu (ஆபத்து) |
 
-If a total isn't directly on the chart, Enn sums its digits and checks again
-(the standard numerology "digit root" step) before giving up — click a result
-to see this worked out, not just the final band.
+The verdict comes from a **total**: the plate series' letter and number
+values plus the digits of the number. If a total isn't on the chart, Enn
+adds its digits again (the standard numerology "digit root" step). The
+"why" panel explains this in a sentence and shows the full working.
 
 ---
 
 ## Feature reference
 
-### Plate & range (left panel / top panel)
+### Filters, search and sort
 
-The plate boxes and range slider described above, plus the **Calculate**
-button. Your eight most recent searches appear under **Recent** and can be
-clicked to re-run them instantly.
+Above the results:
 
-### Band filter
-
-The row of pill-shaped chips above the results (Miga Miga, Adhishtam, Sumar,
-Dhuradhishtam, Sodhanai, Abathu) shows how many results fall in each band.
-Click one to show only that band; click it again to clear the filter.
+- **Verdict chips** (Very lucky, Lucky, Average, Weak, Trouble, Avoid), each
+  with its count, show only that verdict. Tap more than one to combine them,
+  e.g. **Very lucky + Lucky**; **All** clears them. Only verdicts present in
+  the block get a chip.
+- **✦ Fancy** shows only fancy numbers (below). It combines with the verdict
+  chips, so **Lucky + Fancy** gives numbers that are both lucky and
+  good-looking.
+- **Find a number** narrows the list to numbers containing what you type.
+- **Sort** is **Best first** by default (by verdict, then by number), or
+  **Number order**.
 
 ### Fancy numbers
 
-Separately from the luck bands, Enn flags numbers with an eye-catching digit
-pattern. Fancy numbers are marked in the brass accent with a **✦** and a
-pattern tag on every view: a brass corner dot in Scan, and a **Pattern**
-column in Ledger. A note above the results counts them and names any that
-are also Miga Miga.
+Separately from luck, Enn flags numbers with an eye-catching digit pattern.
+They're marked in blue with a **✦** and the pattern's name, and as a blue
+corner dot in the grid.
 
 | Pattern | Example | Tier |
 | - | - | - |
@@ -100,67 +105,49 @@ are also Miga Miga.
 | Double pair | 1122 | Fancy |
 | Triple | 1119, 9111 | Fancy |
 
-The **✦ Fancy** chip at the end of the band filter shows only fancy numbers.
-While it's on, a second row lets you narrow to a single pattern. It combines
-with the band chips, so **Miga Miga + Fancy** gives you numbers that are both
-auspicious and good-looking. These patterns are Enn's own rules, not the
-RTO's official fancy-number list.
+While **✦ Fancy** is on, a second row lets you narrow to one pattern. These
+patterns are Enn's own rules, not the RTO's official fancy-number list.
 
-### Search by number
+### List and grid
 
-The small search box next to the band filter narrows results to numbers
-containing what you type — useful for checking whether one specific number
-made it into a listed range.
+- **List** (default): one row per number with the number as a small plate,
+  its verdict, chart name and total, any fancy pattern, and a pin button.
+  Big blocks load 240 rows at a time as you scroll.
+- **Grid** *(tablet and larger)*: a coloured square per number; each row is
+  a last digit (0–9) and each column ten numbers. It's the quickest way to
+  spot clusters of good numbers in a big block. A legend names each colour.
 
-### Three ways to view results
+### Why this number
 
-Switch between them with the **Tiles / Ledger / Scan** control:
-
-- **Tiles** — a card per number, showing the number, its total, and its band
-  at a glance. The default view.
-- **Ledger** — the same data as a compact sortable-by-eye table, better for
-  scanning many results at once.
-- **Scan** *(tablet and larger screens only)* — a color grid: each row is a
-  last digit (0–9), each column ten consecutive numbers, and each cell is
-  colored by its band. Wider ranges scroll sideways. This is the fastest way
-  to spot clusters of good numbers in a large range — a banner above the
-  grid also tells you how many highly auspicious numbers are in view, and
-  where the first one is.
-
-### Result detail
-
-Click any tile, ledger row, or Scan cell to open its full arithmetic: each
-letter's and digit's value, the series total, the candidate number's digit
-sum, and — if it took one — the digit-reduction step to reach its final band.
+Tap a row or grid square to see the verdict, a one-sentence explanation,
+any fancy pattern, and **The full working** (each letter's value, the digit
+sum, the total and any reduction step). On a computer it opens beside the
+results; on a phone it slides up from the bottom.
 
 ### Compare
 
-Hover a tile and click the pin icon (or open a result's detail) to pin it for
-comparison — up to four at once, shown in a tray docked at the bottom of the
-results.
+Pin up to four numbers with ☆ in the list or the "why" panel. A bar at the
+bottom shows what's pinned; **Compare** opens them side by side.
 
-### Language
+### Checked before
 
-The **EN / TA** switch in the top corner translates the whole interface,
-including band names, into Tamil — using the source chart's own wording, not
-a machine translation.
+Your eight most recent checks appear under the form; tap one to run it
+again. They're kept only in this browser.
 
-### Theme
+### Language and theme
 
-The toggle next to the language switch swaps between light and dark. Both are
-designed with the same care, not an inverted afterthought.
-
-### On a phone
-
-Below tablet width there's no permanent side panel, so a **↑ back to plate &
-range** button appears once you've scrolled down a long result list — tap it
-to jump straight back to the controls instead of scrolling all the way up.
+**EN / தமிழ்** in the top corner switches the whole interface, including
+verdicts and band names, to Tamil. The moon / sun button next to it switches
+between light and dark. Until you use it, Enn follows your device's setting;
+after that it remembers your choice in this browser.
 
 ---
 
 ## What's under the hood, briefly
 
-React + Vite, Tailwind v4, HeroUI. The actual number-crunching runs in a Web
-Worker so a full 0001–9999 range doesn't freeze the tab. See `src/lib/numerology.js`
-for the calculation itself and its test suite for the exact rules encoded from
-the source chart, and `src/lib/fancy.js` for the fancy-number patterns.
+React + Vite and Tailwind v4, with Catamaran (English and Tamil) and Saira
+Condensed (plate lettering) from Google Fonts. The number-crunching runs in
+a Web Worker so a full 0001–9999 range doesn't freeze the tab. See
+`src/lib/numerology.js` for the calculation and its test suite for the exact
+rules encoded from the source chart, and `src/lib/fancy.js` for the
+fancy-number patterns. Colours and type live as tokens in `src/index.css`.

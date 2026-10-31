@@ -25,7 +25,7 @@ export function LoadMore({ shown, total, onMore }) {
       ref={ref}
       type="button"
       onClick={onMore}
-      className="mt-4 w-full rounded-md border border-dashed border-border py-2.5 font-mono text-xs text-muted hover:text-foreground"
+      className="mt-3 min-h-12 w-full rounded-xl border border-dashed border-border-strong text-[15px] font-semibold text-muted hover:text-foreground"
     >
       {t('showMore', shown, total)}
     </button>

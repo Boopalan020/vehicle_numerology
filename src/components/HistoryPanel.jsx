@@ -1,4 +1,4 @@
-import { formatNumber } from '../lib/numerology.js'
+import { formatNumber, spacedSeries } from '../lib/numerology.js'
 import { useLang } from '../lib/LangContext.jsx'
 
 function timeAgo(ts, t) {
@@ -9,25 +9,31 @@ function timeAgo(ts, t) {
   return t('daysAgo', Math.floor(s / 86400))
 }
 
+// "Checked before": one tap re-runs a past search. Hidden entirely when
+// there's no history — an empty heading is noise for a first-time visitor.
 export function HistoryPanel({ history, onRestore }) {
   const { t } = useLang()
-
-  if (history.length === 0) {
-    return <p className="font-mono text-xs text-muted">{t('noHistory')}</p>
-  }
+  if (history.length === 0) return null
   return (
-    <ul className="grid gap-3">
-      {history.map((h) => (
-        <li key={h.timestamp}>
-          <button type="button" onClick={() => onRestore(h)} className="w-full text-left hover:opacity-80">
-            <div className="flex justify-between font-mono text-[11px] text-muted">
-              <span className="font-semibold text-foreground">{h.series}</span>
-              <span>{timeAgo(h.timestamp, t)}</span>
-            </div>
-            <div className="font-mono text-[11px] text-muted">{t('historyLine', formatNumber(h.from), formatNumber(h.to), h.count)}</div>
-          </button>
-        </li>
-      ))}
-    </ul>
+    <section className="flex flex-col gap-2">
+      <h2 className="m-0 text-base font-semibold">{t('recent')}</h2>
+      <ul className="m-0 flex list-none flex-col gap-1.5 p-0">
+        {history.map((h) => (
+          <li key={h.timestamp}>
+            <button
+              type="button"
+              onClick={() => onRestore(h)}
+              className="flex min-h-12 w-full items-center justify-between gap-3 rounded-xl bg-surface px-3.5 py-2 text-left"
+            >
+              <span className="flex flex-col">
+                <span className="font-plate text-xl leading-tight font-bold tracking-wide">{spacedSeries(h.series)}</span>
+                <span className="text-sm text-muted">{t('historyRange', formatNumber(h.from), formatNumber(h.to))}</span>
+              </span>
+              <span className="shrink-0 text-sm text-muted">{timeAgo(h.timestamp, t)}</span>
+            </button>
+          </li>
+        ))}
+      </ul>
+    </section>
   )
 }
